@@ -6,7 +6,7 @@ plugins {
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.skyyo.expandabledraggablelist"
+        applicationId "com.skyyo.expandabledraggablelist2"
         minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
