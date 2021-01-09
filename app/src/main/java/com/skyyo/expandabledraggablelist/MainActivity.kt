@@ -7,6 +7,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -91,7 +92,7 @@ fun ExpandableCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(all = 8.dp)
-            .animateContentSize(animSpec = TweenSpec(EXPAND_ANIMATION_DURATION), clip = false)
+//            .animateContentSize(animSpec = TweenSpec(EXPAND_ANIMATION_DURATION), clip = false)
     ) {
         Column {
             Box {
@@ -167,8 +168,14 @@ fun AnimatedExpandableContent(
     AnimatedVisibility(
         visible = visible,
         initiallyVisible = initialVisibility,
-        enter = enter,
-        exit = exit,
+//        enter = enter,
+//        exit = exit,
+        enter = expandVertically() + enter,
+        exit = shrinkVertically(
+            animSpec = tween(
+                durationMillis = COLLAPSE_ANIMATION_DURATION,
+            )
+        ) + exit
     ) {
         Spacer(modifier = Modifier.heightIn(100.dp))
         Text(
