@@ -27,9 +27,13 @@ class CardsViewModel : ViewModel() {
 
     fun onCardArrowClicked(cardIndex: Int) {
         _cards.value = _cards.value.toMutableList().also {
-            it[cardIndex] =
-                (it[cardIndex] as CardHeader).copy(isExpanded = !(it[cardIndex] as CardHeader).isExpanded)
-            //card.isExpanded = !card.isExpanded
+            val currentCard = (it[cardIndex] as CardHeader)
+            val newState = if (currentCard.cardState == CardState.EXPANDED) {
+                CardState.COLLAPSED
+            } else {
+                CardState.EXPANDED
+            }
+            it[cardIndex] = currentCard.copy(cardState = newState)
         }
     }
 

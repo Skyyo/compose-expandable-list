@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist.ui
+package com.skyyo.expandabledraggablelist.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

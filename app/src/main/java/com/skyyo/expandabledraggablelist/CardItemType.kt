@@ -8,7 +8,9 @@ sealed class CardItemType
 @Immutable
 data class CardHeader(
     val cardId: Int,
-    var isExpanded: Boolean = false
+    val cardState: CardState = CardState.COLLAPSED
 ) : CardItemType()
 
 object ProgressBarItem : CardItemType()
+
+

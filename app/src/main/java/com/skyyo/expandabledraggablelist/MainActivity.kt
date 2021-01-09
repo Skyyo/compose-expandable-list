@@ -1,20 +1,22 @@
 package com.skyyo.expandabledraggablelist
 
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientContext
@@ -24,13 +26,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.skyyo.expandabledraggablelist.ui.ExpandableDraggableListTheme
+import com.skyyo.expandabledraggablelist.theme.ExpandableDraggableListTheme
 
 
-const val EXPAND_ANIMATION_DURATION = 250
-const val COLLAPSE_ANIMATION_DURATION = 200
+const val EXPAND_ANIMATION_DURATION = 300
+const val COLLAPSE_ANIMATION_DURATION = 300
 const val FADE_IN_ANIMATION_DURATION = 350
-const val FADE_OUT_ANIMATION_DURATION = 50
+const val FADE_OUT_ANIMATION_DURATION = 300
+
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<CardsViewModel>()
@@ -61,7 +64,7 @@ fun CardsScreen(vm: CardsViewModel) {
                 when (card) {
                     is CardHeader -> ExpandableCard(
                         card = card,
-                        onCardArrowClicked = { vm.onCardArrowClicked(index) }
+                        onCardArrowClicked = { vm.onCardArrowClicked(index) },
                     )
                     is ProgressBarItem -> PaginationIndicator()
                 }
@@ -74,33 +77,35 @@ fun CardsScreen(vm: CardsViewModel) {
 fun ExpandableCard(
     card: CardHeader,
     onCardArrowClicked: () -> Unit,
-    cardId: Int = card.cardId,
-    cardIsExpanded: Boolean = card.isExpanded,
+    cardId: Int = remember { card.cardId },
+    isExpanded: Boolean = card.cardState == CardState.EXPANDED,
 ) {
+    val cardState = remember { mutableStateOf(card.cardState) }
+    val state = transition(
+        definition = transitionDefinition,
+        initState = cardState.value,
+        toState = if (isExpanded) CardState.EXPANDED else CardState.COLLAPSED,
+    )
     Card(
-        backgroundColor = Color(
-            ContextCompat.getColor(
-                AmbientContext.current,
-                R.color.colorDayNighCardBg
-            )
-        ),
+        backgroundColor = state[bgColor],
         contentColor = Color(
             ContextCompat.getColor(
                 AmbientContext.current,
                 R.color.colorDayNightPurple
             )
         ),
-        shape = RoundedCornerShape(16.dp),
+        elevation = state[elevation].dp,
+        shape = RoundedCornerShape(state[roundedCorners].dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(all = 8.dp)
+            .padding(horizontal = state[paddingHorizontal].dp, vertical = 8.dp)
     ) {
         Column {
             Box {
-                CardArrow(isExpanded = cardIsExpanded, onClicked = onCardArrowClicked)
+                CardArrow(isExpanded = isExpanded, onClicked = onCardArrowClicked)
                 CardTitle(title = "$cardId")
             }
-            AnimatedExpandableContent(visible = cardIsExpanded, initialVisibility = cardIsExpanded)
+            AnimatedExpandableContent(visible = isExpanded, initialVisibility = isExpanded)
         }
     }
 }
@@ -108,9 +113,10 @@ fun ExpandableCard(
 @Composable
 fun CardArrow(
     isExpanded: Boolean,
-    onClicked: () -> Unit,
-    imageId: Int = if (isExpanded) R.drawable.ic_expand_less_24 else R.drawable.ic_expand_more_24
+    onClicked: () -> Unit
 ) {
+    val imageId: Int =
+        if (isExpanded) R.drawable.ic_expand_less_24 else R.drawable.ic_expand_more_24
     IconButton(
         onClick = onClicked,
         content = { Icon(vectorResource(id = imageId)) }
@@ -119,10 +125,13 @@ fun CardArrow(
 
 @Composable
 fun CardTitle(title: String) {
+    val cardTitle = remember { "Card $title" }
     Text(
-        text = AnnotatedString("Card $title"),
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center
+        text = AnnotatedString(cardTitle),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        textAlign = TextAlign.Center,
     )
 }
 
@@ -159,13 +168,13 @@ fun AnimatedExpandableContent(
         )
     }
     val enterExpand = remember {
-        expandVertically(animSpec = tween(EXPAND_ANIMATION_DURATION), clip = false)
+        expandVertically(animSpec = tween(EXPAND_ANIMATION_DURATION))
     }
     val exitFadeOut = remember {
         fadeOut(
             animSpec = TweenSpec(
                 durationMillis = FADE_OUT_ANIMATION_DURATION,
-                easing = FastOutSlowInEasing
+                easing = LinearOutSlowInEasing
             )
         )
     }
@@ -175,14 +184,16 @@ fun AnimatedExpandableContent(
     AnimatedVisibility(
         visible = visible,
         initiallyVisible = initialVisibility,
-        enter = enterFadeIn + enterExpand,
-        exit = exitFadeOut + exitCollapse
+        enter = enterExpand + enterFadeIn,
+        exit = exitCollapse + exitFadeOut
     ) {
-        Spacer(modifier = Modifier.heightIn(100.dp))
-        Text(
-            text = AnnotatedString("Expandable content here"),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
+        Column(modifier = Modifier.padding(8.dp)) {
+            Spacer(modifier = Modifier.heightIn(100.dp))
+            Text(
+                text = "Expandable content here",
+                textAlign = TextAlign.Center
+            )
+        }
+
     }
 }
