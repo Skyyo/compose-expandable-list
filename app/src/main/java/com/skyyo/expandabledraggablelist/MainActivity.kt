@@ -27,8 +27,10 @@ import androidx.core.content.ContextCompat
 import com.skyyo.expandabledraggablelist.ui.ExpandableDraggableListTheme
 
 
-const val EXPAND_ANIMATION_DURATION = 325
-const val COLLAPSE_ANIMATION_DURATION = 100
+const val EXPAND_ANIMATION_DURATION = 250
+const val COLLAPSE_ANIMATION_DURATION = 200
+const val FADE_IN_ANIMATION_DURATION = 350
+const val FADE_OUT_ANIMATION_DURATION = 50
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<CardsViewModel>()
@@ -92,7 +94,6 @@ fun ExpandableCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(all = 8.dp)
-//            .animateContentSize(animSpec = TweenSpec(EXPAND_ANIMATION_DURATION), clip = false)
     ) {
         Column {
             Box {
@@ -149,40 +150,38 @@ fun AnimatedExpandableContent(
 ) {
     // remember these specs so they don't restart if recomposing during the animation
     // this is required since TweenSpec restarts on interruption
-    val enter = remember {
+    val enterFadeIn = remember {
         fadeIn(
             animSpec = TweenSpec(
-                durationMillis = EXPAND_ANIMATION_DURATION,
+                durationMillis = FADE_IN_ANIMATION_DURATION,
                 easing = FastOutLinearInEasing
             )
         )
     }
-    val exit = remember {
+    val enterExpand = remember {
+        expandVertically(animSpec = tween(EXPAND_ANIMATION_DURATION), clip = false)
+    }
+    val exitFadeOut = remember {
         fadeOut(
             animSpec = TweenSpec(
-                durationMillis = COLLAPSE_ANIMATION_DURATION,
+                durationMillis = FADE_OUT_ANIMATION_DURATION,
                 easing = FastOutSlowInEasing
             )
         )
     }
+    val exitCollapse = remember {
+        shrinkVertically(animSpec = tween(COLLAPSE_ANIMATION_DURATION))
+    }
     AnimatedVisibility(
         visible = visible,
         initiallyVisible = initialVisibility,
-//        enter = enter,
-//        exit = exit,
-        enter = expandVertically() + enter,
-        exit = shrinkVertically(
-            animSpec = tween(
-                durationMillis = COLLAPSE_ANIMATION_DURATION,
-            )
-        ) + exit
+        enter = enterFadeIn + enterExpand,
+        exit = exitFadeOut + exitCollapse
     ) {
         Spacer(modifier = Modifier.heightIn(100.dp))
         Text(
             text = AnnotatedString("Expandable content here"),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
     }
