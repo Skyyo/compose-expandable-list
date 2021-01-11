@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist
+package com.skyyo.expandabledraggablelist.cardsList
 
 import androidx.compose.runtime.Immutable
 
@@ -7,7 +7,7 @@ sealed class CardItemType
 
 @Immutable
 data class CardHeader(
-    val cardId: Int,
+    val cardTitle: String,
     val cardState: CardState = CardState.COLLAPSED
 ) : CardItemType()
 

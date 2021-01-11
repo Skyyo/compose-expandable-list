@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist
+package com.skyyo.expandabledraggablelist.cardsList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +11,7 @@ class CardsViewModel : ViewModel() {
 
     private val _cards = MutableStateFlow(listOf<CardItemType>())
     val cards: StateFlow<List<CardItemType>> get() = _cards
+    private val listOfIds = hashMapOf<String,Boolean>()
 
     init {
         getFakeData()
@@ -19,7 +20,7 @@ class CardsViewModel : ViewModel() {
     fun getFakeData() {
         viewModelScope.launch(Dispatchers.Default) {
             val testList = arrayListOf<CardItemType>()
-            repeat(20) { testList += (CardHeader(cardId = it)) }
+            repeat(20) { testList += (CardHeader(cardTitle = "Card $it")) }
             testList += ProgressBarItem
             _cards.value += testList
         }
