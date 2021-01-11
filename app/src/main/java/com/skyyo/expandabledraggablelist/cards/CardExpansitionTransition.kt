@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist.cardsList
+package com.skyyo.expandabledraggablelist.cards
 
 import androidx.compose.animation.ColorPropKey
 import androidx.compose.animation.core.*

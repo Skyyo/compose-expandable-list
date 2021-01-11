@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist.cardsList
+package com.skyyo.expandabledraggablelist.cards
 
 const val EXPAND_ANIMATION_DURATION = 300
 const val COLLAPSE_ANIMATION_DURATION = 300

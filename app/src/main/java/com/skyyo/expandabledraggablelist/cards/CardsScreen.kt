@@ -1,6 +1,5 @@
-package com.skyyo.expandabledraggablelist.cardsList
+package com.skyyo.expandabledraggablelist.cards
 
-import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -12,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -22,12 +20,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.skyyo.expandabledraggablelist.*
 import com.skyyo.expandabledraggablelist.R
 
 @Composable
-fun CardsScreen(vm: CardsViewModel) {
-    val cardsState = vm.cards.collectAsState()
+fun CardsScreen(viewModel: CardsViewModel) {
+    val cards = viewModel.cards.collectAsState()
     Scaffold(
         backgroundColor = Color(
             ContextCompat.getColor(
@@ -37,14 +34,11 @@ fun CardsScreen(vm: CardsViewModel) {
         )
     ) {
         LazyColumn {
-            itemsIndexed(cardsState.value) { index, card ->
-                when (card) {
-                    is CardHeader -> ExpandableCard(
-                        card = card,
-                        onCardArrowClicked = { vm.onCardArrowClicked(index) },
-                    )
-                    is ProgressBarItem -> PaginationIndicator()
-                }
+            itemsIndexed(cards.value) { index, card ->
+                ExpandableCard(
+                    card = card,
+                    onCardArrowClick = { viewModel.onCardArrowClicked(index) },
+                )
             }
         }
     }
@@ -52,40 +46,43 @@ fun CardsScreen(vm: CardsViewModel) {
 
 @Composable
 fun ExpandableCard(
-    card: CardHeader,
-    onCardArrowClicked: () -> Unit,
-    isExpanded: Boolean = card.cardState == CardState.EXPANDED,
+    card: ExpandableCardModel,
+    onCardArrowClick: () -> Unit,
 ) {
-    val cardState = remember { mutableStateOf(card.cardState) }
-    val state = transition(
+    val isExpanded = card.state == CardState.EXPANDED
+    val initialState = card.state
+    val nextState = if (isExpanded) CardState.EXPANDED else CardState.COLLAPSED
+    val transitionState = transition(
         definition = transitionDefinition,
-        initState = cardState.value,
-        toState = if (isExpanded) CardState.EXPANDED else CardState.COLLAPSED,
+        initState = initialState,
+        toState = nextState
     )
     Card(
-        backgroundColor = state[bgColor],
+        backgroundColor = transitionState[bgColor],
         contentColor = Color(
             ContextCompat.getColor(
                 AmbientContext.current,
                 R.color.colorDayNightPurple
             )
         ),
-        elevation = state[elevation].dp,
-        shape = RoundedCornerShape(state[roundedCorners].dp),
+        elevation = transitionState[elevation].dp,
+        shape = RoundedCornerShape(transitionState[roundedCorners].dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = state[paddingHorizontal].dp, vertical = 8.dp)
+            .padding(
+                horizontal = transitionState[paddingHorizontal].dp,
+                vertical = 8.dp
+            )
     ) {
         Column {
             Box {
-                Log.d("vovk", "composing IconButton: ${card.cardTitle}:${state[rotationDegree]}")
                 CardArrow(
-                    degrees = state[rotationDegree],
-                    onClicked = onCardArrowClicked
+                    degrees = transitionState[rotationDegree],
+                    onClick = onCardArrowClick
                 )
-                CardTitle(title = card.cardTitle)
+                CardTitle(title = card.title)
             }
-            AnimatedExpandableContent(visible = isExpanded, initialVisibility = isExpanded)
+            ExpandableContent(visible = isExpanded, initialVisibility = isExpanded)
         }
     }
 }
@@ -93,10 +90,10 @@ fun ExpandableCard(
 @Composable
 fun CardArrow(
     degrees: Float,
-    onClicked: () -> Unit
+    onClick: () -> Unit
 ) {
     IconButton(
-        onClick = onClicked,
+        onClick = onClick,
         content = {
             Icon(
                 imageVector = vectorResource(id = R.drawable.ic_expand_less_24),
@@ -117,25 +114,9 @@ fun CardTitle(title: String) {
     )
 }
 
-@Composable
-fun PaginationIndicator() {
-    CircularProgressIndicator(
-        color = Color(
-            ContextCompat.getColor(
-                AmbientContext.current,
-                R.color.colorDayNightPurple
-            )
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 8.dp)
-            .size(36.dp)
-    )
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AnimatedExpandableContent(
+fun ExpandableContent(
     visible: Boolean = true,
     initialVisibility: Boolean = false
 ) {
