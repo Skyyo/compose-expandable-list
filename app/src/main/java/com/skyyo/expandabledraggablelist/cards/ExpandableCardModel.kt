@@ -5,5 +5,5 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class ExpandableCardModel(
     val title: String,
-    var state: CardState = CardState.COLLAPSED
+    val state: CardState = CardState.COLLAPSED
 )

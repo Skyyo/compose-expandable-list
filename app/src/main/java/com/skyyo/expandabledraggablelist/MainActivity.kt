@@ -8,7 +8,7 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.platform.setContent
 import com.skyyo.expandabledraggablelist.cards.CardsScreen
 import com.skyyo.expandabledraggablelist.cards.CardsViewModel
-import com.skyyo.expandabledraggablelist.theme.ExpandableDraggableListTheme
+import com.skyyo.expandabledraggablelist.theme.AppTheme
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ExpandableDraggableListTheme {
+            AppTheme {
                 Surface(color = MaterialTheme.colors.background) { CardsScreen(cardsViewModel) }
             }
         }

@@ -53,7 +53,7 @@ fun ExpandableCard(
     val initialState = card.state
     val nextState = if (isExpanded) CardState.EXPANDED else CardState.COLLAPSED
     val transitionState = transition(
-        definition = transitionDefinition,
+        definition = cardTransitionDefinition,
         initState = initialState,
         toState = nextState
     )

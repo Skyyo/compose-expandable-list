@@ -11,7 +11,7 @@ val elevation = IntPropKey(label = "CardElevationTransitionKey")
 val bgColor = ColorPropKey(label = "CardBgColorTransitionKey")
 val rotationDegree = FloatPropKey(label = "CardArrowRotationTransitionKey")
 
-val transitionDefinition by lazy {
+val cardTransitionDefinition by lazy {
     transitionDefinition<CardState> {
         state(CardState.COLLAPSED) {
             this[roundedCorners] = 16

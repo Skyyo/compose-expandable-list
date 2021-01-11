@@ -20,7 +20,7 @@ class CardsViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.Default) {
             val testList = arrayListOf<ExpandableCardModel>()
             repeat(20) { testList += ExpandableCardModel(title = "Card $it") }
-            _cards.value += testList
+            _cards.emit(testList)
         }
     }
 

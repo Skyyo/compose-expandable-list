@@ -28,7 +28,7 @@ onSurface = Color.Black,
 )
 
 @Composable
-fun ExpandableDraggableListTheme(
+fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
