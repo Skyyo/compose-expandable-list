@@ -58,10 +58,10 @@ val cardTransitionDefinition by lazy {
                 durationMillis = COLLAPSE_ANIMATION_DURATION,
             )
             bgColor using tween(
-                durationMillis = EXPAND_ANIMATION_DURATION,
+                durationMillis = COLLAPSE_ANIMATION_DURATION,
             )
             rotationDegree using tween(
-                durationMillis = EXPAND_ANIMATION_DURATION,
+                durationMillis = COLLAPSE_ANIMATION_DURATION,
             )
         }
     }
