@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist.cards
+package com.skyyo.expandablelist.cards
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -20,7 +20,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.skyyo.expandabledraggablelist.R
+import com.skyyo.expandablelist.R
 
 @Composable
 fun CardsScreen(viewModel: CardsViewModel) {

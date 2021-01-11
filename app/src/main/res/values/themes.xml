@@ -1,17 +1,17 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.ExpandableDraggableList" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.ExpandableList" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.ExpandableDraggableList.NoActionBar">
+    <style name="Theme.ExpandableList.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.ExpandableDraggableList.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ExpandableList.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.ExpandableDraggableList.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.ExpandableList.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

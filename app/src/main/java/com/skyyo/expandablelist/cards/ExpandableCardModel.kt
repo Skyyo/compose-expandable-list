@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist.cards
+package com.skyyo.expandablelist.cards
 
 import androidx.compose.runtime.Immutable
 

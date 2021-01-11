@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist
+package com.skyyo.expandablelist
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

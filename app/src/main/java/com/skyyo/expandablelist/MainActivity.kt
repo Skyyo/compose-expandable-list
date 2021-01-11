@@ -1,4 +1,4 @@
-package com.skyyo.expandabledraggablelist
+package com.skyyo.expandablelist
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.platform.setContent
-import com.skyyo.expandabledraggablelist.cards.CardsScreen
-import com.skyyo.expandabledraggablelist.cards.CardsViewModel
-import com.skyyo.expandabledraggablelist.theme.AppTheme
+import com.skyyo.expandablelist.cards.CardsScreen
+import com.skyyo.expandablelist.cards.CardsViewModel
+import com.skyyo.expandablelist.theme.AppTheme
 
 
 class MainActivity : AppCompatActivity() {

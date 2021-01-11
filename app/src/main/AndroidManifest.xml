@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.skyyo.expandabledraggablelist">
+    package="com.skyyo.expandablelist">
 
     <application
-        android:name=".CardsApplication"
+        android:name="com.skyyo.expandablelist.CardsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ExpandableDraggableList">
+        android:theme="@style/Theme.ExpandableList">
         <activity
-            android:name=".MainActivity"
+            android:name="com.skyyo.expandablelist.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.ExpandableDraggableList.NoActionBar">
+            android:theme="@style/Theme.ExpandableList.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

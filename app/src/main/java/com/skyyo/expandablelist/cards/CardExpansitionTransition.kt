@@ -1,9 +1,9 @@
-package com.skyyo.expandabledraggablelist.cards
+package com.skyyo.expandablelist.cards
 
 import androidx.compose.animation.ColorPropKey
 import androidx.compose.animation.core.*
-import com.skyyo.expandabledraggablelist.theme.cardBg
-import com.skyyo.expandabledraggablelist.theme.greenish
+import com.skyyo.expandablelist.theme.cardBg
+import com.skyyo.expandablelist.theme.greenish
 
 val roundedCorners = IntPropKey(label = "CardCornersTransitionKey")
 val paddingHorizontal = IntPropKey(label = "CardPaddingHorizontalTransitionKey")
