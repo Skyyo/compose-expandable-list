@@ -50,7 +50,8 @@ fun ExpandableCard(
     onCardArrowClick: () -> Unit,
 ) {
     val isExpanded = card.state == CardState.EXPANDED
-//    we don't use nextState, since is will result in animating items on initial composition
+//    we don't use nextState since this will result in animation being played every
+//    time when card appears on screen, during scrolling
 //    val initialState = card.state
 //    val nextState = if (isExpanded) CardState.COLLAPSED else CardState.EXPANDED
     val transitionState = transition(
