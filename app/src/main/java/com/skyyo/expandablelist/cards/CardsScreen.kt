@@ -50,12 +50,13 @@ fun ExpandableCard(
     onCardArrowClick: () -> Unit,
 ) {
     val isExpanded = card.state == CardState.EXPANDED
-    val initialState = card.state
-    val nextState = if (isExpanded) CardState.EXPANDED else CardState.COLLAPSED
+//    initialState is always  doing anything since we want to animate item only on tap
+//    val initialState = card.state
+//    val nextState = if (isExpanded) CardState.EXPANDED else CardState.COLLAPSED
     val transitionState = transition(
         definition = cardTransitionDefinition,
-        initState = initialState,
-        toState = nextState
+        initState = card.state,
+        toState = card.state
     )
     Card(
         backgroundColor = transitionState[bgColor],
