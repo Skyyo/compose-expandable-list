@@ -12,6 +12,9 @@ class CardsViewModel : ViewModel() {
     private val _cards = MutableStateFlow(listOf<ExpandableCardModel>())
     val cards: StateFlow<List<ExpandableCardModel>> get() = _cards
 
+    private val _expandedCardIdsList = MutableStateFlow(listOf<Int>())
+    val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
+
     init {
         getFakeData()
     }
@@ -19,18 +22,14 @@ class CardsViewModel : ViewModel() {
     private fun getFakeData() {
         viewModelScope.launch(Dispatchers.Default) {
             val testList = arrayListOf<ExpandableCardModel>()
-            repeat(20) { testList += ExpandableCardModel(title = "Card $it") }
+            repeat(20) { testList += ExpandableCardModel(id = it, title = "Card $it") }
             _cards.emit(testList)
         }
     }
 
-    fun onCardArrowClicked(cardIndex: Int) {
-        _cards.value = _cards.value.toMutableList().also {
-            val card = it[cardIndex]
-            val newState =
-                if (card.state == CardState.EXPANDED) CardState.COLLAPSED else CardState.EXPANDED
-            it[cardIndex] = card.copy(state = newState)
+    fun onCardArrowClicked(cardId: Int) {
+        _expandedCardIdsList.value = _expandedCardIdsList.value.toMutableList().also { list ->
+            if (list.contains(cardId)) list.remove(cardId) else list.add(cardId)
         }
     }
-
 }

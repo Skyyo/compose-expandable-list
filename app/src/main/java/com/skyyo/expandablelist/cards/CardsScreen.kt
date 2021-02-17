@@ -1,43 +1,48 @@
 package com.skyyo.expandablelist.cards
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.skyyo.expandablelist.R
+import com.skyyo.expandablelist.theme.cardCollapsedBackgroundColor
+import com.skyyo.expandablelist.theme.cardExpandedBackgroundColor
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @Composable
 fun CardsScreen(viewModel: CardsViewModel) {
     val cards = viewModel.cards.collectAsState()
+    val expandedCardIds = viewModel.expandedCardIdsList.collectAsState()
     Scaffold(
         backgroundColor = Color(
             ContextCompat.getColor(
-                AmbientContext.current,
+                LocalContext.current,
                 R.color.colorDayNightWhite
             )
         )
     ) {
         LazyColumn {
-            itemsIndexed(cards.value) { index, card ->
+            itemsIndexed(cards.value) { _, card ->
                 ExpandableCard(
                     card = card,
-                    onCardArrowClick = { viewModel.onCardArrowClicked(index) },
+                    onCardArrowClick = { viewModel.onCardArrowClicked(card.id) },
+                    expanded = expandedCardIds.value.contains(card.id),
                 )
             }
         }
@@ -48,43 +53,69 @@ fun CardsScreen(viewModel: CardsViewModel) {
 fun ExpandableCard(
     card: ExpandableCardModel,
     onCardArrowClick: () -> Unit,
+    expanded: Boolean,
 ) {
-    val isExpanded = card.state == CardState.EXPANDED
-//    we don't use nextState since this will result in animation being played every
-//    time when card appears on screen, during scrolling
-//    val initialState = card.state
-//    val nextState = if (isExpanded) CardState.COLLAPSED else CardState.EXPANDED
-    val transitionState = transition(
-        definition = cardTransitionDefinition,
-        initState = card.state,
-        toState = card.state
-    )
+    val transitionState = remember {
+        MutableTransitionState(expanded).apply {
+            targetState = !expanded
+        }
+    }
+    val transition = updateTransition(transitionState)
+    val cardBgColor by transition.animateColor({
+        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+    }) {
+        if (expanded) cardExpandedBackgroundColor else cardCollapsedBackgroundColor
+    }
+    val cardPaddingHorizontal by transition.animateDp({
+        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+    }) {
+        if (expanded) 48.dp else 24.dp
+    }
+    val cardElevation by transition.animateDp({
+        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+    }) {
+        if (expanded) 24.dp else 4.dp
+    }
+    val cardRoundedCorners by transition.animateDp({
+        tween(
+            durationMillis = EXPAND_ANIMATION_DURATION,
+            easing = FastOutSlowInEasing
+        )
+    }) {
+        if (expanded) 0.dp else 16.dp
+    }
+    val arrowRotationDegree by transition.animateFloat({
+        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+    }) {
+        if (expanded) 0f else 180f
+    }
+
     Card(
-        backgroundColor = transitionState[bgColor],
+        backgroundColor = cardBgColor,
         contentColor = Color(
             ContextCompat.getColor(
-                AmbientContext.current,
+                LocalContext.current,
                 R.color.colorDayNightPurple
             )
         ),
-        elevation = transitionState[elevation].dp,
-        shape = RoundedCornerShape(transitionState[roundedCorners].dp),
+        elevation = cardElevation,
+        shape = RoundedCornerShape(cardRoundedCorners),
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = transitionState[paddingHorizontal].dp,
+                horizontal = cardPaddingHorizontal,
                 vertical = 8.dp
             )
     ) {
         Column {
             Box {
                 CardArrow(
-                    degrees = transitionState[rotationDegree],
+                    degrees = arrowRotationDegree,
                     onClick = onCardArrowClick
                 )
                 CardTitle(title = card.title)
             }
-            ExpandableContent(visible = isExpanded, initialVisibility = isExpanded)
+            ExpandableContent(visible = expanded, initialVisibility = expanded)
         }
     }
 }
@@ -98,7 +129,8 @@ fun CardArrow(
         onClick = onClick,
         content = {
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_expand_less_24),
+                painter = painterResource(id = R.drawable.ic_expand_less_24),
+                contentDescription = "Expandable Arrow",
                 modifier = Modifier.rotate(degrees),
             )
         }
@@ -122,29 +154,27 @@ fun ExpandableContent(
     visible: Boolean = true,
     initialVisibility: Boolean = false
 ) {
-    // remember these specs so they don't restart if recomposing during the animation
-    // this is required since TweenSpec restarts on interruption
     val enterFadeIn = remember {
         fadeIn(
-            animSpec = TweenSpec(
+            animationSpec = TweenSpec(
                 durationMillis = FADE_IN_ANIMATION_DURATION,
                 easing = FastOutLinearInEasing
             )
         )
     }
     val enterExpand = remember {
-        expandVertically(animSpec = tween(EXPAND_ANIMATION_DURATION))
+        expandVertically(animationSpec = tween(EXPAND_ANIMATION_DURATION))
     }
     val exitFadeOut = remember {
         fadeOut(
-            animSpec = TweenSpec(
+            animationSpec = TweenSpec(
                 durationMillis = FADE_OUT_ANIMATION_DURATION,
                 easing = LinearOutSlowInEasing
             )
         )
     }
     val exitCollapse = remember {
-        shrinkVertically(animSpec = tween(COLLAPSE_ANIMATION_DURATION))
+        shrinkVertically(animationSpec = tween(COLLAPSE_ANIMATION_DURATION))
     }
     AnimatedVisibility(
         visible = visible,
