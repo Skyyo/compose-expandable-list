@@ -1,5 +1,6 @@
 package com.skyyo.expandablelist.cards
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
@@ -49,6 +50,7 @@ fun CardsScreen(viewModel: CardsViewModel) {
     }
 }
 
+@SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
 fun ExpandableCard(
     card: ExpandableCardModel,
