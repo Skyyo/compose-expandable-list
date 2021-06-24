@@ -62,20 +62,20 @@ fun ExpandableCard(
             targetState = !expanded
         }
     }
-    val transition = updateTransition(transitionState)
+    val transition = updateTransition(transitionState, label = "transition")
     val cardBgColor by transition.animateColor({
         tween(durationMillis = EXPAND_ANIMATION_DURATION)
-    }) {
+    }, label = "bgColorTransition") {
         if (expanded) cardExpandedBackgroundColor else cardCollapsedBackgroundColor
     }
     val cardPaddingHorizontal by transition.animateDp({
         tween(durationMillis = EXPAND_ANIMATION_DURATION)
-    }) {
+    }, label = "paddingTransition") {
         if (expanded) 48.dp else 24.dp
     }
     val cardElevation by transition.animateDp({
         tween(durationMillis = EXPAND_ANIMATION_DURATION)
-    }) {
+    }, label = "elevationTransition") {
         if (expanded) 24.dp else 4.dp
     }
     val cardRoundedCorners by transition.animateDp({
@@ -83,12 +83,12 @@ fun ExpandableCard(
             durationMillis = EXPAND_ANIMATION_DURATION,
             easing = FastOutSlowInEasing
         )
-    }) {
+    }, label = "cornersTransition") {
         if (expanded) 0.dp else 16.dp
     }
     val arrowRotationDegree by transition.animateFloat({
         tween(durationMillis = EXPAND_ANIMATION_DURATION)
-    }) {
+    }, label = "rotationDegreeTransition") {
         if (expanded) 0f else 180f
     }
 
@@ -117,7 +117,7 @@ fun ExpandableCard(
                 )
                 CardTitle(title = card.title)
             }
-            ExpandableContent(visible = expanded, initialVisibility = expanded)
+            ExpandableContent(visible = expanded)
         }
     }
 }
@@ -154,7 +154,6 @@ fun CardTitle(title: String) {
 @Composable
 fun ExpandableContent(
     visible: Boolean = true,
-    initialVisibility: Boolean = false
 ) {
     val enterFadeIn = remember {
         fadeIn(
@@ -180,7 +179,6 @@ fun ExpandableContent(
     }
     AnimatedVisibility(
         visible = visible,
-        initiallyVisible = initialVisibility,
         enter = enterExpand + enterFadeIn,
         exit = exitCollapse + exitFadeOut
     ) {
@@ -191,6 +189,5 @@ fun ExpandableContent(
                 textAlign = TextAlign.Center
             )
         }
-
     }
 }
