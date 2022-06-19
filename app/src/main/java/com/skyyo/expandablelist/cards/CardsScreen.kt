@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -65,30 +66,30 @@ fun ExpandableCard(
     }
     val transition = updateTransition(transitionState, label = "transition")
     val cardBgColor by transition.animateColor({
-        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "bgColorTransition") {
         if (expanded) cardExpandedBackgroundColor else cardCollapsedBackgroundColor
     }
     val cardPaddingHorizontal by transition.animateDp({
-        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "paddingTransition") {
         if (expanded) 48.dp else 24.dp
     }
     val cardElevation by transition.animateDp({
-        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "elevationTransition") {
         if (expanded) 24.dp else 4.dp
     }
     val cardRoundedCorners by transition.animateDp({
         tween(
-            durationMillis = EXPAND_ANIMATION_DURATION,
+            durationMillis = EXPANSTION_TRANSITION_DURATION,
             easing = FastOutSlowInEasing
         )
     }, label = "cornersTransition") {
         if (expanded) 0.dp else 16.dp
     }
     val arrowRotationDegree by transition.animateFloat({
-        tween(durationMillis = EXPAND_ANIMATION_DURATION)
+        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "rotationDegreeTransition") {
         if (expanded) 0f else 180f
     }
@@ -154,32 +155,30 @@ fun CardTitle(title: String) {
 fun ExpandableContent(
     visible: Boolean = true,
 ) {
-    val enterFadeIn = remember {
-        fadeIn(
-            animationSpec = TweenSpec(
-                durationMillis = FADE_IN_ANIMATION_DURATION,
-                easing = FastOutLinearInEasing
-            )
+    val enterTransition = remember {
+        expandVertically(
+            expandFrom = Alignment.Top,
+            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
+        ) + fadeIn(
+            initialAlpha = 0.3f,
+            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         )
     }
-    val enterExpand = remember {
-        expandVertically(animationSpec = tween(EXPAND_ANIMATION_DURATION))
-    }
-    val exitFadeOut = remember {
-        fadeOut(
-            animationSpec = TweenSpec(
-                durationMillis = FADE_OUT_ANIMATION_DURATION,
-                easing = LinearOutSlowInEasing
-            )
+    val exitTransition = remember {
+        shrinkVertically(
+            // Expand from the top.
+            shrinkTowards = Alignment.Top,
+            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
+        ) + fadeOut(
+            // Fade in with the initial alpha of 0.3f.
+            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         )
     }
-    val exitCollapse = remember {
-        shrinkVertically(animationSpec = tween(COLLAPSE_ANIMATION_DURATION))
-    }
+
     AnimatedVisibility(
         visible = visible,
-        enter = enterExpand + enterFadeIn,
-        exit = exitCollapse + exitFadeOut
+        enter = enterTransition,
+        exit = exitTransition
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Spacer(modifier = Modifier.heightIn(100.dp))
