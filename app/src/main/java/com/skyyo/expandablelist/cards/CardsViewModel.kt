@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CardsViewModel : ViewModel() {
 
@@ -20,10 +21,12 @@ class CardsViewModel : ViewModel() {
     }
 
     private fun getFakeData() {
-        viewModelScope.launch(Dispatchers.Default) {
-            val testList = arrayListOf<ExpandableCardModel>()
-            repeat(20) { testList += ExpandableCardModel(id = it, title = "Card $it") }
-            _cards.emit(testList)
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                val testList = arrayListOf<ExpandableCardModel>()
+                repeat(20) { testList += ExpandableCardModel(id = it, title = "Card $it") }
+                _cards.emit(testList)
+            }
         }
     }
 

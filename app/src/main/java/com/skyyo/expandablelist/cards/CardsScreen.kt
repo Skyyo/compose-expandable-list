@@ -28,8 +28,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalCoroutinesApi
 @Composable
 fun CardsScreen(viewModel: CardsViewModel) {
-    val cards = viewModel.cards.collectAsState()
-    val expandedCardIds = viewModel.expandedCardIdsList.collectAsState()
+    val cards by viewModel.cards.collectAsState()
+    val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
+
     Scaffold(
         backgroundColor = Color(
             ContextCompat.getColor(
@@ -39,11 +40,11 @@ fun CardsScreen(viewModel: CardsViewModel) {
         )
     ) {
         LazyColumn {
-            itemsIndexed(cards.value) { _, card ->
+            itemsIndexed(cards) { _, card ->
                 ExpandableCard(
                     card = card,
                     onCardArrowClick = { viewModel.onCardArrowClicked(card.id) },
-                    expanded = expandedCardIds.value.contains(card.id),
+                    expanded = expandedCardIds.contains(card.id),
                 )
             }
         }
@@ -91,15 +92,14 @@ fun ExpandableCard(
     }, label = "rotationDegreeTransition") {
         if (expanded) 0f else 180f
     }
+    val context = LocalContext.current
+    val contentColour = remember {
+        Color(ContextCompat.getColor(context, R.color.colorDayNightPurple))
+    }
 
     Card(
         backgroundColor = cardBgColor,
-        contentColor = Color(
-            ContextCompat.getColor(
-                LocalContext.current,
-                R.color.colorDayNightPurple
-            )
-        ),
+        contentColor = contentColour,
         elevation = cardElevation,
         shape = RoundedCornerShape(cardRoundedCorners),
         modifier = Modifier
@@ -150,7 +150,6 @@ fun CardTitle(title: String) {
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ExpandableContent(
     visible: Boolean = true,
