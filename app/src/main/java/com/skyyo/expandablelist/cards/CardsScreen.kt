@@ -40,7 +40,7 @@ fun CardsScreen(viewModel: CardsViewModel) {
 
     Scaffold(backgroundColor = bgColour) { paddingValues ->
         LazyColumn(Modifier.padding(paddingValues)) {
-            items(cards) { card ->
+            items(cards, ExpandableCardModel::id) { card ->
                 val isExpanded = remember(expandedCardIds) { expandedCardIds.contains(card.id) }
                 ExpandableCard(
                     card = card,
