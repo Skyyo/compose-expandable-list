@@ -5,11 +5,10 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -21,31 +20,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skyyo.expandablelist.R
 import com.skyyo.expandablelist.theme.cardCollapsedBackgroundColor
 import com.skyyo.expandablelist.theme.cardExpandedBackgroundColor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @ExperimentalCoroutinesApi
 @Composable
 fun CardsScreen(viewModel: CardsViewModel) {
-    val cards by viewModel.cards.collectAsState()
-    val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
+    val cards by viewModel.cards.collectAsStateWithLifecycle()
+    val expandedCardIds by viewModel.expandedCardIdsList.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val bgColour = remember {
+        Color(ContextCompat.getColor(context, R.color.colorDayNightWhite))
+    }
 
-    Scaffold(
-        backgroundColor = Color(
-            ContextCompat.getColor(
-                LocalContext.current,
-                R.color.colorDayNightWhite
-            )
-        )
-    ) {
-        LazyColumn {
-            itemsIndexed(cards) { _, card ->
+    Scaffold(backgroundColor = bgColour) { paddingValues ->
+        LazyColumn(Modifier.padding(paddingValues)) {
+            items(cards) { card ->
+                val isExpanded = remember(expandedCardIds) { expandedCardIds.contains(card.id) }
                 ExpandableCard(
                     card = card,
                     onCardArrowClick = { viewModel.onCardArrowClicked(card.id) },
-                    expanded = expandedCardIds.contains(card.id),
+                    expanded = isExpanded,
                 )
             }
         }
